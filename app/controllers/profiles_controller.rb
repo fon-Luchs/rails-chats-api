@@ -3,6 +3,15 @@ class ProfilesController < ApplicationController
 
   before_action :build_resource, only: :create
 
+  def show
+    @user = current_user
+    @user.name = nil
+    @user.id = nil
+    @user.password_digest = nil
+    @user.created_at = nil
+    @user.updated_at = nil
+  end
+
   private
   def build_resource
     @user = User.new resource_params
