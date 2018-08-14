@@ -10,7 +10,7 @@ class ProfilesController < ApplicationController
     # @user.created_at = nil
     # @user.password_digest = nil
     # @user.id = nil
-
+  
     render json: @user, only: %i[email], symbolize_names: true
   end
 
