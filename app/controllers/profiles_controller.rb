@@ -2,16 +2,14 @@ class ProfilesController < ApplicationController
   skip_before_action :authenticate!, only: :create
 
   before_action :build_resource, only: :create
+  before_action :resource, only: [:show, :chats]
 
   def show
-    @user = current_user
-    # @user.name = nil
-    # @user.updated_at = nil
-    # @user.created_at = nil
-    # @user.password_digest = nil
-    # @user.id = nil
-  
     render json: @user, only: %i[email], symbolize_names: true
+  end
+
+  def chats
+    render json: @user.chats, symbolize_names: true
   end
 
   private
