@@ -9,7 +9,10 @@ class ChatsController < ApplicationController
   end
 
   def create
-
+    @chat = Chat.new(chat_param)
+    if @chat.save
+     user_chat_filling
+    end
   end
 
   def add
@@ -21,6 +24,17 @@ class ChatsController < ApplicationController
   end
 
   private
+
+  def user_chat_filling
+    UserChat.create([
+                        {user_id: current_user.id, chat_id: @chat.id},
+                        {user_id: @chat.recipient_id, chat_id: @chat.id}
+                    ])
+  end
+
+  def chat_param
+    params.require(:chat).permit(:recipient_id)
+  end
 
   def set_chat
     @chat ||= Chat.find(params[:id])
