@@ -4,7 +4,7 @@ class Message < ApplicationRecord
 
   validates :body, length: { in: 3..255 }
 
-  def messages_usernme
+  def messages_username
     self.username = user.name
   end  
 end

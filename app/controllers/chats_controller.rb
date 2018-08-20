@@ -12,6 +12,7 @@ class ChatsController < ApplicationController
     @chat = Chat.new(chat_param)
     if @chat.save
      user_chat_filling
+     render json: @chat
     end
   end
 
@@ -24,6 +25,14 @@ class ChatsController < ApplicationController
   end
 
   private
+
+
+  def resource
+    @user ||= current_user
+  end
+
+  def resource_param
+  end
 
   def user_chat_filling
     UserChat.create([
