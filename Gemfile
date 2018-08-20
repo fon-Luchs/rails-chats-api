@@ -7,6 +7,7 @@ gem 'puma'
 gem 'bcrypt'
 gem 'uglifier'
 gem 'bootsnap', require: false
+gem 'active_model_serializers'
 # gem 'bcrypt'
 # gem 'redis'
 # gem 'mini_magick'

@@ -5,7 +5,7 @@ class ChatsController < ApplicationController
 
   def index
     @chats = Chat.all
-    render json: @chats, symbolize_names: true
+    render json: @chats, symbolize_names: true, root: false
   end
 
   def create
