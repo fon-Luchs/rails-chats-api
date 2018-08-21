@@ -8,6 +8,13 @@ class ChatsController < ApplicationController
     render json: @chats, symbolize_names: true, root: false
   end
 
+  def show
+    @chat = Chat.find(params[:id])
+    @chat.last_message = @chat.messages.last.body
+
+    render json: @chat
+  end
+
   def create
     @chat = Chat.new(chat_param)
     if @chat.save

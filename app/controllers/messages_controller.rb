@@ -13,16 +13,17 @@ class MessagesController < ApplicationController
   end
 
   def index
-    @chat = Chat.find(params[:id])
-    @message = chat.messages
 
-    render json: @message, symbolize_names: true,  root: false
+    @chat = Chat.find(params[:chat_id])
+    @messages = @chat.messages.order('created_at DESC').paginate(page: params[:page], per_page: 5)
+
+    render json: @messages,  root: false
   end
 
   private
 
   def resource
-    @user ||= current_user
+    @user ||= current_user  
   end
 
   def messages_params

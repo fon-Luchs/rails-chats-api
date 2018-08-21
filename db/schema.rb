@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_20_140055) do
+ActiveRecord::Schema.define(version: 2018_08_21_085958) do
 
   create_table "auth_tokens", force: :cascade do |t|
     t.string "value"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 2018_08_20_140055) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "recipient_id"
+    t.string "last_message"
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
