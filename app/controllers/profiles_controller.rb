@@ -9,7 +9,7 @@ class ProfilesController < ApplicationController
   end
 
   def chats
-    render json: @user.chats, symbolize_names: true
+    render json: @user.chats
   end
 
   private

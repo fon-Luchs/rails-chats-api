@@ -1,11 +1,9 @@
 class MessagesController < ApplicationController
 
-  before_action :authenticate!
-
   def create
 
     @message = Message.new(messages_params)
-    # @message.messages_username
+    @message.messages_username
 
     if @message.save
       render json: @message, root: false
@@ -13,9 +11,8 @@ class MessagesController < ApplicationController
   end
 
   def index
-
     @chat = Chat.find(params[:chat_id])
-    @messages = @chat.messages.order('created_at DESC').paginate(page: params[:page], per_page: 5)
+    @messages = @chat.messages.order('created_at DESC').paginate(page: params[:page], per_page: PER_PAGE_SIZE)
 
     render json: @messages,  root: false
   end
