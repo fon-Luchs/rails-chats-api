@@ -1,16 +1,16 @@
 class ChatsController < ApplicationController
-
-  before_action :set_chat, only: [:add, :leave]
+  before_action :set_chat, only: [:add, :leave, :show]
 
   def index
-    @chats = Chat.all
-    render json: @chats, symbolize_names: true, root: false
+    @chats = current_user.chats.all
+    @chats.each do |chat|
+      chat.chat_without_message?
+      render json: chat, symbolize_names: true, root: false
+    end
   end
 
   def show
-    @chat = Chat.find(params[:id])
-    @chat.last_message = @chat.messages.last.body
-
+    @chat.chat_without_message?
     render json: @chat
   end
 
@@ -18,34 +18,45 @@ class ChatsController < ApplicationController
     @chat = Chat.new(chat_param)
     @chat.users << current_user
     @chat.users << recipient
-    if @chat.save 
-     render json: @chat
+    @chat.last_message = 'Welcome to the chat'
+    if @chat.save
+      render json: @chat
     else
       render json: @chat.errors
     end
   end
 
   def add
-    @chat_room = @chat.user_chats.where(user_id: current_user.id).first_or_create
-    if @chat_room.save
+    @chat.chat_without_message?
+    @join_user = @chat.user_chats.where(user_id: current_user.id).first_or_create
+    if @join_user.save
       render status: :ok, json: @chat
     else
       render json: @chat_room.errors
-    end  
+    end
   end
 
   def leave
-    @chat_room = @chat.user_chats.where(user_id: current_user.id).destroy_all
-    render status: :ok, json: @chat
-
+    @leave_user = @chat.user_chats.where(user_id: current_user.id).destroy_all
+    @msg = 'Chat is inactive'
+    if @chat.users.size < 2
+      @chat.destroy
+      render status: 410, json: @msg
+    else
+      render status: :ok, json: @chat
+    end
   end
 
-  private  
+  private
+
+  def check_messages_in_the_chat
+    @chat.chat_without_message?
+  end
 
   def recipient
     @recipient = User.where(id: @chat.recipient_id)
   end
-    
+
   def chat_param
     params.require(:chat).permit(:recipient_id)
   end
@@ -53,5 +64,4 @@ class ChatsController < ApplicationController
   def set_chat
     @chat ||= Chat.find(params[:id])
   end
-
 end

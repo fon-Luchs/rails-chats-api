@@ -55,3 +55,54 @@ curl -H 'Accept: application/json' \
      -H 'Authorization: Token token="XXXX-YYYY-ZZZZ"' \
      localhost:3000/profile
 ```
+
+### Show Profile Chats (Chat Index)
+```
+curl -H 'Accept: application/json' \
+          -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+          localhost:3000/chats/
+```
+
+### Create Chat
+```
+curl -H 'Accept: application/json' \
+     -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+     -d 'chat[recipient_id]=1' \
+     localhost:3000/chats
+```
+
+### Join in the Chat
+```
+curl -H 'Accept: application/json' \
+     -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+     -X POST localhost:3000/chats/1/add
+```
+
+### Leave Chat
+```
+curl -H 'Accept: application/json' \
+     -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+     -X DELETE localhost:3000/chats/1/leave
+```
+
+### Show Chat
+```
+curl -H 'Accept: application/json' \
+     -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+     localhost:3000/chats/1
+```
+
+### Message Create
+```
+curl -H 'Accept: application/json' \
+          -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+          -d 'message[body]=...' \
+          localhost:3000/chats/2/messages
+```
+
+### Message Index
+```
+curl -H 'Accept: application/json' \
+          -H 'Authorization: Token token="EfhwJ6fHBSjaWrRg8wG33rBP"' \
+          localhost:3000/chats/2/messages
+```

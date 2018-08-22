@@ -8,10 +8,6 @@ class ProfilesController < ApplicationController
     render json: @user, only: %i[email], symbolize_names: true
   end
 
-  def chats
-    render json: @user.chats
-  end
-
   private
   def build_resource
     @user = User.new resource_params

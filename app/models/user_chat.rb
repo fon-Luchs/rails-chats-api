@@ -6,14 +6,8 @@ class UserChat < ApplicationRecord
   validate :validate_users_in_the_chat
 
   def validate_users_in_the_chat
-    if chat.users.size > 8
-      errors.add(:chat, :invalid) 
-    elsif chat.users.size < 2
-      inactive_mess = "chat is inactive"
-      inactive_mess.to_json
-        
-    end
-  end  
+    errors.add(:chat, :invalid) if chat.users.size > 8
+  end
 
   def validate_user_chats_count
     errors.add(:user, :invalid) if user.chats.size > 9

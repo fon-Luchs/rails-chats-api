@@ -7,5 +7,4 @@ Rails.application.routes.draw do
   end
   post   'chats/:id/add', to: 'chats#add'
   delete 'chats/:id/leave', to: 'chats#leave'
-  get 'profile/chats'
 end

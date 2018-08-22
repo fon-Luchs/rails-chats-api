@@ -2,7 +2,8 @@ class MessagesController < ApplicationController
 
   def create
 
-    @message = Message.new(messages_params)
+    @chat = Chat.find(params[:chat_id])
+    @message = @chat.messages.new(messages_params)
     @message.messages_username
 
     if @message.save
@@ -19,11 +20,13 @@ class MessagesController < ApplicationController
 
   private
 
+  PER_PAGE_SIZE = 30
+
   def resource
-    @user ||= current_user  
+    render json: @message.errors
   end
 
   def messages_params
-    params.require(:message).permit(:body, :chat_id, :user_id)
+    params.require(:message).permit(:body).merge(user_id: current_user.id)
   end
 end
