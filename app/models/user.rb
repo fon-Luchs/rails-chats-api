@@ -5,5 +5,4 @@ class User < ApplicationRecord
   has_many :user_chats, dependent: :destroy
   has_many :messages
   has_many :chats, through: :user_chats
-
 end
