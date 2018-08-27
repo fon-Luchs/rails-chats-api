@@ -1,15 +1,16 @@
 class ChatsController < ApplicationController
+  include ChatCreatable
+
   before_action :set_chat, only: [:add, :leave, :show]
-  before_action :set_new_chat, only: :create
 
   def index
     @chats = current_user.chats.all
-    @chats.each(&:chat_without_message?)
     render json: @chats
   end
 
   def show
-    render json: @chat
+    @chat.chat_without_message?
+    render json: @chat, serializer: ChatWithLastMessageSerializer
   end
 
   def create
@@ -21,7 +22,7 @@ class ChatsController < ApplicationController
   end
 
   def add
-    @join_user = @chat.user_chats.where(user_id: current_user.id).first_or_create
+    @join_user = @chat.user_chats.find_or_create_by(user_id: current_user.id)
     if @join_user.save
       render status: :ok, json: @chat
     else
@@ -42,22 +43,11 @@ class ChatsController < ApplicationController
 
   private
 
-  def recipient
-    @recipient = User.where(id: @chat.recipient_id)
-  end
-
   def chat_param
     params.require(:chat).permit(:recipient_id)
   end
 
   def set_chat
     @chat ||= Chat.find(params[:id])
-    @chat.chat_without_message?
-  end
-
-  def set_new_chat
-    @chat = Chat.new(chat_param)
-    @chat.users << current_user
-    @chat.users << recipient
   end
 end

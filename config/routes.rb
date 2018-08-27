@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
   resource :session, only: [:create, :destroy]
-  resource :profile, only: [:create, :show]
-  resources :users,  only: [:show]
-  resources :chats do
-    resources :messages, only: [:create, :index]
+  resource :profile, only: [:create, :show] do
+    resources :chats, only: [:index, :show, :create] do
+      resources :messages, only: [:create, :index]
+    end
   end
-  post   'chats/:id/add', to: 'chats#add'
-  delete 'chats/:id/leave', to: 'chats#leave'
+  resources :users,  only: [:show]
+  post   'profile/chats/:id/add', to: 'chats#add'
+  delete 'profile/chats/:id/leave', to: 'chats#leave'
 end

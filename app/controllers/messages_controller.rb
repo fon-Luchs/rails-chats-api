@@ -4,7 +4,8 @@ class MessagesController < ApplicationController
     @message = @chat.messages.new(messages_params)
 
     if @message.save
-      render json: @chat, root: false
+      @chat.chat_without_message?
+      render json: @chat, root: false, serializer: ChatWithLastMessageSerializer
     else
       render json: @message.errors
     end
@@ -17,7 +18,7 @@ class MessagesController < ApplicationController
       per_page: PER_PAGE_SIZE
     )
 
-    render json: @chat, root: false
+    render json: @chat, root: false, serializer: ChatWithinShowSerializer
   end
 
   private
