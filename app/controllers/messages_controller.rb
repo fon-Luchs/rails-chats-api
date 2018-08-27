@@ -4,7 +4,7 @@ class MessagesController < ApplicationController
     @message = @chat.messages.new(messages_params)
 
     if @message.save
-      render json: @message, root: false
+      render json: @chat, root: false
     else
       render json: @message.errors
     end
@@ -17,7 +17,7 @@ class MessagesController < ApplicationController
       per_page: PER_PAGE_SIZE
     )
 
-    render json: @messages, root: false
+    render json: @chat, root: false
   end
 
   private

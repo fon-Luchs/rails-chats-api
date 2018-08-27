@@ -1,24 +1,18 @@
 class ChatsController < ApplicationController
   before_action :set_chat, only: [:add, :leave, :show]
+  before_action :set_new_chat, only: :create
 
   def index
     @chats = current_user.chats.all
-    @chats.each do |chat|
-      chat.chat_without_message?
-      render json: chat, symbolize_names: true, root: false
-    end
+    @chats.each(&:chat_without_message?)
+    render json: @chats
   end
 
   def show
-    @chat.chat_without_message?
     render json: @chat
   end
 
   def create
-    @chat = Chat.new(chat_param)
-    @chat.users << current_user
-    @chat.users << recipient
-    @chat.last_message = 'Welcome to the chat'
     if @chat.save
       render json: @chat
     else
@@ -27,12 +21,11 @@ class ChatsController < ApplicationController
   end
 
   def add
-    @chat.chat_without_message?
     @join_user = @chat.user_chats.where(user_id: current_user.id).first_or_create
     if @join_user.save
       render status: :ok, json: @chat
     else
-      render json: @chat_room.errors
+      render json: @join_user.errors
     end
   end
 
@@ -49,10 +42,6 @@ class ChatsController < ApplicationController
 
   private
 
-  def check_messages_in_the_chat
-    @chat.chat_without_message?
-  end
-
   def recipient
     @recipient = User.where(id: @chat.recipient_id)
   end
@@ -63,5 +52,12 @@ class ChatsController < ApplicationController
 
   def set_chat
     @chat ||= Chat.find(params[:id])
+    @chat.chat_without_message?
+  end
+
+  def set_new_chat
+    @chat = Chat.new(chat_param)
+    @chat.users << current_user
+    @chat.users << recipient
   end
 end

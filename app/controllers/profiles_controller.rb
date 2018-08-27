@@ -5,7 +5,7 @@ class ProfilesController < ApplicationController
   before_action :resource, only: [:show, :chats]
 
   def show
-    render json: @user, only: %i[email], symbolize_names: true
+    render json: @user
   end
 
   private

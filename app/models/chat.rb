@@ -6,10 +6,7 @@ class Chat < ApplicationRecord
   has_many :messages, dependent: :destroy
 
   def chat_without_message?
-    self.last_message = if last_message.nil?
-                          'Welcome to the chat'
-                        else
-                          messages.body.last
-                        end
+    msg = messages.last
+    self.last_message = msg.body unless msg.nil?
   end
 end
