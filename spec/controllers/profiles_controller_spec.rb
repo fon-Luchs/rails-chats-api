@@ -39,7 +39,7 @@ RSpec.describe ProfilesController, type: :controller do
     describe '#show.json' do
       before { get :show, format: :json }
 
-      it { should render_template :show }
+      # it { should serialize :user }
 
       its(:resource) { should eq user }
     end

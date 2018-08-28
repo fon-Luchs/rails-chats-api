@@ -199,6 +199,7 @@ DEPENDENCIES
   bcrypt
   bootsnap
   database_rewinder
+  factory_bot
   factory_bot_rails
   ffaker
   listen

@@ -34,4 +34,5 @@ group :test do
   gem 'rspec-collection_matchers'
   gem 'shoulda-callback-matchers'
   gem 'rails-controller-testing'
+  gem 'factory_bot'
 end
