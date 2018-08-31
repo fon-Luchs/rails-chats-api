@@ -44,4 +44,14 @@ RSpec.describe ProfilesController, type: :controller do
       its(:resource) { should eq user }
     end
   end
+
+  describe 'routes test' do
+    it { should route(:get, '/profile').to(action: :show) }
+    it { should route(:post, '/profile').to(action: :create) }
+  end
+
+  describe 'callbacks test' do
+    it { should use_before_action(:build_resource) }
+    it { should use_before_action(:resource) } 
+  end
 end

@@ -16,7 +16,9 @@ RSpec.describe SessionsController, type: :controller do
 
     context do
       before { expect(session).to receive(:save).and_return(true) }
-
+      def resource
+        @user ||= current_user
+      end
       before { post :create, params: params, format: :json }
 
       it { should render_template :create }

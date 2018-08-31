@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Message, type: :model do
+  let(:user)  { stub_model User }
+  let(:message) { stub_model Message, user: user }
+  subject { message }
   context 'relation test' do
     it { should belong_to(:chat) }
     it { should belong_to(:user) }
