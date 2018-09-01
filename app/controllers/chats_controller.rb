@@ -12,14 +12,6 @@ class ChatsController < ApplicationController
     render json: @chat, serializer: ChatWithLastMessageSerializer
   end
 
-  # def create
-    # if @chat.save
-      # render json: @chat
-    # else
-      # render json: @chat.errors
-    # end
-  # end
-
   def add
     @join_user = @chat.user_chats.find_or_create_by(user_id: current_user.id)
     if @join_user.save
@@ -41,6 +33,10 @@ class ChatsController < ApplicationController
   end
 
   private
+
+  def set_chat
+    @chat ||= Chat.find(params[:id])
+  end
 
   def chat_params
     params.require(:chat).permit(:recipient_id)

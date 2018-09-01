@@ -2,10 +2,10 @@ class ProfilesController < ApplicationController
   skip_before_action :authenticate!, only: :create
 
   before_action :build_resource, only: :create
-  before_action :resource, only: [:show, :chats]
+  before_action :resource, only: :show
 
   def show
-    render json: @user
+    render json: @user, serializer: ProfileShowSerialize
   end
 
   private

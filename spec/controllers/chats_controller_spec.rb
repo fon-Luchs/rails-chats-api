@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe ChatsController, type: :controller do
   it { should be_a ApplicationController }
 
+  let(:chat) { stub_model Chat}
+
   context 'callbacks test' do
     it { should use_before_action(:set_chat) }
   end
@@ -28,7 +30,6 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#create.json' do
-    let(:chat) { stub_model Chat }
     let(:recipient_id) { user.id.to_s }
     let(:params) { { chat: { recipient_id: recipient_id } } }
     let(:permitted_params) { permit_params! params, :chat }
@@ -47,7 +48,8 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#show.json' do
-    before { get :show, format: :json }
+    let(:chat) { user.chats.create(recipient_id: 2) }
+    before { get :show, format: :json, params: { id: chat.id } }
 
     its(:resource) { should eq chat }
   end
