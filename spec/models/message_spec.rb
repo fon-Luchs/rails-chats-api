@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Message, type: :model do
-  let(:user)  { stub_model User }
+  let(:user)    { stub_model User }
   let(:message) { stub_model Message, user: user }
   subject { message }
   context 'relation test' do
