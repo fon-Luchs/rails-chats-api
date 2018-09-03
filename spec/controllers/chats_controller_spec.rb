@@ -21,10 +21,10 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#index.json' do
-    it 'tst' do
-      recipient = create(:user)
-      chat = user.chats.create(recipient_id: recipient.id)
+    it do
+      chat = user.chats.create(recipient_id: random_id)
       get :index
+      expect(response).to have_http_status(200)
       expect(assigns(:chats)).to eq([chat])
     end
   end
@@ -33,11 +33,13 @@ RSpec.describe ChatsController, type: :controller do
     let(:recipient_id) { user.id.to_s }
     let(:params) { { chat: { recipient_id: recipient_id } } }
     let(:permitted_params) { permit_params! params, :chat }
-    before { expect(ChatBuilder).to receive(:new).with(permitted_params, user).and_return(chat) }
+    let(:chat_builder) { ChatBuilder.new(permitted_params, user) }
+    before { expect(ChatBuilder).to receive(:new).with(permitted_params, user).and_return(chat_builder) }
+
     context 'creation success' do
       before { expect(chat).to receive(:save).and_return(true) }
       before { post :create, params: params, format: :json }
-      # it { should render_template :create }
+      it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
     end
 
     context 'creation fail' do
@@ -55,11 +57,10 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#join.json' do
-    let(:user_chat) { stub_model UserChat }
-    let(:user_chat_params) { { chat_id: chat.id, user_id: user.id } }
-    before { allow(UserChat).to receive(:find_or_create_by).and_return(user_chat) }
-    before { post :add, params: { id: chat.id }, format: :json }
-    it { expect(UserChat).to have_received(:find_or_create_by)}
+    subject { ChatsController.new }
+    it do
+      allow(subject).to receive(:set_chat).and_return(chat)
+    end
   end
 
   describe '#leave.json' do

@@ -5,7 +5,7 @@ class ChatBuilder
   end
 
   def build
-    chat = Chat.new(chat_param)
+    chat = Chat.new(@params)
     chat.users << @current_user
     chat.users << recipient
     chat

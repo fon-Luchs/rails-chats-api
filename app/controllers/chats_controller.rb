@@ -1,10 +1,19 @@
 class ChatsController < ApplicationController
 
   before_action :set_chat, only: [:add, :leave, :show]
+  before_action :resource, only: [:create]
 
   def index
     @chats = current_user.chats.all
     render json: @chats
+  end
+
+  def create
+    if @chat.save
+      render json: @chat
+    else
+      render json: @chat.errors
+    end
   end
 
   def show
@@ -42,7 +51,11 @@ class ChatsController < ApplicationController
     params.require(:chat).permit(:recipient_id)
   end
 
+  def chat_preparation
+    ChatBuilder.new(chat_params, current_user).build
+  end
+
   def resource
-    @chat ||= ChatBuilder.new(chat_params, current_user)
+    @chat = chat_preparation
   end
 end

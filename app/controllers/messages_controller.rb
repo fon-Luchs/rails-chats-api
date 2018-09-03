@@ -1,6 +1,5 @@
 class MessagesController < ApplicationController
   def create
-    @chat = Chat.find(params[:chat_id])
     @message = @chat.messages.new(messages_params)
 
     if @message.save
@@ -24,6 +23,10 @@ class MessagesController < ApplicationController
   private
 
   PER_PAGE_SIZE = 30
+
+  def set_chat
+    @chat = Chat.find(params[:chat_id])
+  end
 
   def messages_params
     params.require(:message).permit(:body).merge(user_id: current_user.id)
