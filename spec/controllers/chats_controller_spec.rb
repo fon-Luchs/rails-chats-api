@@ -55,14 +55,18 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#join.json' do
-    before { post :add, format: :json, params: { id: chat.id } }
     let(:user) { create(:user) }
     let(:chat) { create(:chat) }
     let(:current_user) { create(:user, :with_expected_additional_columns) }
     let(:user_chat_params) { { user_id: current_user.id, chat_id: chat.id } }
+    let(:user_chat) { stub_model UserChat }
+
+    before { allow(UserChat).to receive(:find_or_create_by).with(user_chat_params).and_return(user_chat) }
+
     it do
       UserChat.create(chat_id: chat.id, user_id: user.id)
-      expect(UserChat).to receive(:find_or_create_by).with(user_chat_params)
+      post :add, format: :json, params: { id: chat.id }
+      expect(UserChat).to have_received(:find_or_create_by).with(user_chat_params)
     end
   end
 
