@@ -5,7 +5,7 @@ RSpec.describe ChatsController, type: :controller do
 
   let(:chat) { stub_model Chat}
   let(:random_id) { FFaker::Random.rand(10..1000) }
-  let(:user) { stub_model User }
+  let(:user) { stub_model User, id: 1321 }
   before { sign_in user }
 
   context 'callbacks test' do
@@ -30,15 +30,19 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#create.json' do
-    let(:recipient_id) { user.id.to_s }
-    let(:params) { { chat: { recipient_id: recipient_id } } }
-    let(:permitted_params) { permit_params! params, :chat }
-    let(:chat_builder) { ChatBuilder.new(permitted_params, user) }
-    before { expect(ChatBuilder).to receive(:new).with(permitted_params, user).and_return(chat_builder) }
+      let(:recipient_id) { user.id }
+      let(:params) { { chat: { recipient_id: recipient_id.to_json } } }
+      let(:permitted_params) { permit_params! params, :chat }
+      let(:chat_builder) { ChatBuilder.new(permitted_params, user) }
+    before do
+      expect(ChatBuilder).to receive(:new).with(permitted_params, user).and_return(chat_builder) 
+      expect(chat_builder).to receive(:build).and_return(chat)
+    end
 
     context 'creation success' do
       before { expect(chat).to receive(:save).and_return(true) }
       before { post :create, params: params, format: :json }
+      it { expect(controller.params.permitted?).to eq(true) }
       it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
     end
 
@@ -50,16 +54,15 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#show.json' do
-    let(:chat) { user.chats.create(recipient_id: random_id) }
-    before { get :show, format: :json, params: { id: chat.id } }
-    it { expect(response.body).to eq(ChatWithLastMessageSerializer.new(chat).to_json) }
-    its(:resource) { should eq chat }
+    subject { create(:chat, recipient_id: random_id) }
+    before { get :show, format: :json, params: { id: subject.id } }
+    it { expect(response.body).to eq(ChatWithLastMessageSerializer.new(subject).to_json) }
+    it(:resource) { should eq subject }
   end
 
   describe '#join.json' do
-    subject { ChatsController.new }
     it do
-      allow(subject).to receive(:set_chat).and_return(chat)
+     
     end
   end
 

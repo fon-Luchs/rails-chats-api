@@ -56,6 +56,8 @@ class ChatsController < ApplicationController
   end
 
   def resource
+    puts(">>#{params}||#{params.permitted?}<<")
+    puts(">>#{params.require(:chat).permit(:recipient_id).permitted?}<<")
     @chat = chat_preparation
   end
 end

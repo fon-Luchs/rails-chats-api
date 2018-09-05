@@ -12,6 +12,7 @@ class ChatBuilder
   end
 
   def recipient
-    recipient ||= User.find @params[:recipient_id]
+    recipient ||= User.find(@params[:recipient_id])
   end
+
 end
