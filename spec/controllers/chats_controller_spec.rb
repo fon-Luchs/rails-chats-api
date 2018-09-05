@@ -42,14 +42,19 @@ RSpec.describe ChatsController, type: :controller do
     context 'creation success' do
       before { expect(chat).to receive(:save).and_return(true) }
       before { post :create, params: params, format: :json }
-      it { expect(controller.params.permitted?).to eq(true) }
+      let(:recipient_id) { user.id }
+      let(:params) { { chat: { recipient_id: recipient_id.to_json } } }
+      let(:permitted_params) { permit_params! params, :chat }
+      it { expect(permitted_params.permitted?).to eq(true) }
       it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
     end
 
     context 'creation fail' do
+      subject{ chat.errors }
       before { expect(chat).to receive(:save).and_return(false) }
+      before { subject.add(:base, 'error') }
       before { post :create, params: params, format: :json }
-      it { should render_template :errors }
+      it { expect(response.body).to eq(subject.messages.to_json) }
     end
   end
 
