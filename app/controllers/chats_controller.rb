@@ -22,7 +22,7 @@ class ChatsController < ApplicationController
   end
 
   def add
-    @join_user = chat.user_chats.find_or_create_by(user_id: current_user.id)
+    @join_user = @chat.user_chats.find_or_create_by(user_id: current_user.id)
     if @join_user.save
       render status: :ok, json: @chat
     else

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe ChatsController, type: :controller do
   it { should be_a ApplicationController }
-
+  
   let(:chat) { stub_model Chat}
   let(:random_id) { FFaker::Random.rand(10..1000) }
   let(:user) { stub_model User, id: 1321 }
@@ -30,13 +30,14 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#create.json' do
-      let(:recipient_id) { user.id }
-      let(:params) { { chat: { recipient_id: recipient_id.to_json } } }
-      let(:permitted_params) { permit_params! params, :chat }
-      let(:chat_builder) { ChatBuilder.new(permitted_params, user) }
+    let(:params) { { chat: { recipient_id: user.id.to_json } } }
+    let(:permitted_params) { permit_params! params, :chat }
     before do
-      expect(ChatBuilder).to receive(:new).with(permitted_params, user).and_return(chat_builder) 
-      expect(chat_builder).to receive(:build).and_return(chat)
+      expect(ChatBuilder).to receive(:new).with(permitted_params, user) do
+        double.tap do |chat_builder|
+          expect(chat_builder).to receive(:build).and_return(chat)
+        end
+      end
     end
 
     context 'creation success' do
@@ -66,8 +67,31 @@ RSpec.describe ChatsController, type: :controller do
   end
 
   describe '#join.json' do
-    it do
-     
+    let(:params)  { { user_id: user.id } }
+    let(:finded_user_chat) { stub_model UserChat, user: user, chat: chat }
+    before do
+      expect(Chat).to receive(:find).with(chat.id.to_s) do
+        double.tap do |chat|
+          expect(chat).to receive(:user_chats) do
+            double.tap do |user_chat|
+              expect(user_chat).to receive(:find_or_create_by)
+                .with(params).and_return(finded_user_chat)
+            end
+          end
+        end
+      end
+    end
+
+    context 'join success' do
+      before { post :add, format: :json, params: { id: chat.id } }
+      before { expect(finded_user_chat).to receive(:save).and_return(true) }
+      it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
+    end
+
+    context 'join fail' do
+      before { post :add, format: :json, params: { id: chat.id } }
+      before { expect(finded_user_chat).to receive(:save).and_return(false) }
+      it { should render_template :errors }
     end
   end
 
