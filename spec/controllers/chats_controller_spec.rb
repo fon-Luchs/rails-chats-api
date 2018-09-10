@@ -44,7 +44,7 @@ RSpec.describe ChatsController, type: :controller do
       before { expect(chat).to receive(:save).and_return(true) }
       before { post :create, params: params, format: :json }
       let(:recipient_id) { user.id }
-      let(:params) { { chat: { recipient_id: recipient_id.to_json } } }
+      let(:params) { { chat: { recipient_id: recipient_id.to_s } } }
       let(:permitted_params) { permit_params! params, :chat }
       it { expect(permitted_params.permitted?).to eq(true) }
       it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
@@ -95,21 +95,28 @@ RSpec.describe ChatsController, type: :controller do
 
   describe '#leave.json' do
     let(:params) { { user_id: user.id } }
-    before { expect(Chat).to receive(:find).with(chat.id.to_s) }
+    subject { stub_model UserChat, user: user, chat: chat }
     before do
-      expect(chat).to receive_message_chain(:user_chats, :where)
-        .with(no_args).with(params) do
-          double.tap { |user_chat| expect(user_chat).to receive(:destroy_all) }
+      expect(Chat).to receive(:find).with(chat.id.to_s) do
+        double.tap do |chat|
+          expect(chat).to receive_message_chain(
+            :user_chats, :where, :destroy_all
+          ).with(no_args).with(params).with(no_args)
         end
+      end
     end
 
     context 'leave chat success' do
       before { delete :leave, format: :json, params: { id: chat.id } }
-      before { expect(chat).to receive_message_chain(:users, :count).and_return(false) }
+      before { expect(chat).to receive_message_chain(:users, :size).and_return(false) }
       it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
     end
 
-    context 'leave chat fail' do
+    context 'leave the chat with two members' do
+      before { delete :leave, format: :json, params: { id: chat.id } }
+      before { expect(chat).to receive_message_chain(:users, :size).and_return(true) }
+      it { expect(chat).to receive(:destroy) }
+      it { expect(response.body).to eq('Chat is inactive') }
     end
   end
 end

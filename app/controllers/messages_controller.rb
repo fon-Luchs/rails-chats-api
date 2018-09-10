@@ -1,4 +1,6 @@
 class MessagesController < ApplicationController
+  before_action :set_chat
+
   def create
     @message = @chat.messages.new(messages_params)
 
@@ -11,7 +13,6 @@ class MessagesController < ApplicationController
   end
 
   def index
-    @chat = Chat.find(params[:chat_id])
     @messages = @chat.messages.order('created_at DESC').paginate(
       page: params[:page],
       per_page: PER_PAGE_SIZE
