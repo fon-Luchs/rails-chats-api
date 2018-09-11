@@ -12,7 +12,7 @@ RSpec.describe 'UsersList', type: :request do
   describe 'Authorized' do
     let(:current_user) { users.sample }
 
-    before { get '/users', params: {} , headers: authorized_headers(current_user.auth_token.value) }
+    before { get '/users', params: {}, headers: authorized_headers(current_user.auth_token.value) }
 
     it { expect { JSON.parse response.body }.not_to raise_error }
 

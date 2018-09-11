@@ -92,6 +92,13 @@ curl -H 'Accept: application/json' \
      localhost:3000/profile/chats/:id
 ```
 
+### Chat Index
+```
+curl -H 'Accept: application/json' \
+     -H 'Authorization: Token token="XXXX-YYYY-ZZZZ"' \
+     localhost:3000/profile/chats/
+```
+
 ### Message Create
 ```
 curl -H 'Accept: application/json' \

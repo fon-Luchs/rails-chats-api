@@ -45,7 +45,6 @@ RSpec.describe MessagesController, type: :controller do
     subject { Message.order('created_at DESC') }
     let(:msg)        { chat.messages.create(user_id: user.id, body: 'Hi)') }
     let(:msg_newest) { chat.messages.create(user_id: user.id, body: 'Guys') }
-
     before do
       expect(Chat).to receive(:find).with(chat.id.to_s).and_return(chat)
     end

@@ -11,7 +11,7 @@ RSpec.describe 'ProfileRequest', type: :request do
 
   let(:headers) { authorized_headers user.auth_token.value }
 
-  before { get '/profile', params: {} , headers: headers }
+  before { get '/profile', params: {}, headers: headers }
 
   context do
     it { expect { JSON.parse response.body }.not_to raise_error }
