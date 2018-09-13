@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'ChatBuild', type: :request do
-  let(:chat) { create(:chat, id: 1333) }
   let(:user) { create(:user, :with_auth_token) }
   let(:headers) { authorized_headers user.auth_token.value }
   let(:params) { { chat: { recipient_id: user.id.to_s } }.to_json }
@@ -16,8 +15,8 @@ RSpec.describe 'ChatBuild', type: :request do
     it do
       expect(parsed_response).to match(
         {
-          'id' => chat.id,
-          'users' => []
+          'id' => Chat.last.id,
+          'users' => [{}, {}]
         }
       )
     end

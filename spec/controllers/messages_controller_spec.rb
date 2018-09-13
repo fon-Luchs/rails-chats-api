@@ -73,4 +73,10 @@ RSpec.describe MessagesController, type: :controller do
 
     it { expect(response.body).to eq(ChatWithinShowSerializer.new(chat).to_json) }
   end
+
+  describe 'routes test' do
+    it { should route(:get, '/profile/chats/2/messages').to(action: :index, chat_id: 2) }
+
+    it { should route(:post, '/profile/chats/2/messages').to(action: :create, chat_id: 2) }
+  end
 end
