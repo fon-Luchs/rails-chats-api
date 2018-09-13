@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'ChatBuild', type: :request do
-  let(:chat) { stub_model Chat, id: 1333 }
+  let(:chat) { create(:chat, id: 1333) }
   let(:user) { create(:user, :with_auth_token) }
   let(:headers) { authorized_headers user.auth_token.value }
   let(:params) { { chat: { recipient_id: user.id.to_s } }.to_json }

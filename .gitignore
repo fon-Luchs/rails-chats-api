@@ -17,3 +17,7 @@
 /tmp
 
 \.idea/
+
+coverage/\.resultset\.json
+
+coverage/
