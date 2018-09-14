@@ -1,31 +1,54 @@
 require 'rails_helper'
 
 RSpec.describe ChatBuilder do
-  let(:user) { stub_model User }
-  let(:params) { { recipient_id: user.id } }
-  let(:chat_builder) { ChatBuilder.new(params, user) }
+  let(:current_user)   { stub_model User }
 
-  describe 'initialize' do
-    subject { chat_builder }
+  let(:recipient_user) { stub_model User }
 
-    it { expect(subject.instance_variable_get(:@params)).to eq(params) }
-    it { expect(subject.instance_variable_get(:@current_user)).to eq(user) }
-  end
+  let(:params)         { { recipient_id: recipient_user.id } }
 
-  describe 'build' do
-    subject { stub_model Chat }
+  let(:chat_builder)   { ChatBuilder.new(params, current_user) }
 
+  let(:chat)           { stub_model Chat }
 
-    before do
-      expect(chat_builder).to receive(:build)
-    end
+  describe '.initialize' do
+    it { expect(chat_builder.instance_variable_get(:@params)).to eq(params) }
 
     it do
-      expect(User).to receive(:find).with(params[:recipient_id]).and_return(user)
-      expect(Chat).to receive(:new).and_return(subject)
+      expect(chat_builder.instance_variable_get(:@current_user))
+        .to eq(current_user)
     end
   end
 
-  describe 'recipient' do
+  describe '.build' do
+    before { expect(Chat).to receive(:new).with(params).and_return(chat) }
+
+    before do
+      expect(User).to receive(:find)
+        .with(params[:recipient_id])
+        .and_return(recipient_user)
+    end
+
+    before { add_user_in_chat current_user }
+
+    before { add_user_in_chat recipient_user }
+
+    it { expect(chat_builder.build).to eq(chat) }
+  end
+
+  describe '.recipient' do
+    before do
+      expect(User).to receive(:find)
+        .with(params[:recipient_id])
+        .and_return(recipient_user)
+    end
+
+    it { expect(recipient_user).to eq(User.find(params[:recipient_id])) }
+  end
+
+  def add_user_in_chat(user)
+    expect(chat).to receive(:users) do
+      double.tap { |a| expect(a).to receive(:<<).with(user) }
+    end
   end
 end
