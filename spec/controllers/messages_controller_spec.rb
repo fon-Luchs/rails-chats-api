@@ -50,7 +50,6 @@ RSpec.describe MessagesController, type: :controller do
   end
 
   describe '#index' do
-    subject { Message.order('created_at DESC') }
     let(:msg)        { chat.messages.create(user_id: user.id, body: 'Hi)') }
 
     let(:msg_newest) { chat.messages.create(user_id: user.id, body: 'Guys') }
@@ -58,6 +57,8 @@ RSpec.describe MessagesController, type: :controller do
     let(:PER_PAGE_SIZE) { 30 }
 
     before { expect(Chat).to receive(:find).with(chat.id.to_s).and_return(chat) }
+
+    before { get :index, params: { chat_id: chat.id }, format: :json }
 
     before do
       expect(chat).to receive(:messages) do
@@ -68,8 +69,6 @@ RSpec.describe MessagesController, type: :controller do
         end
       end
     end
-
-    before { get :index, params: { chat_id: chat.id }, format: :json }
 
     it { expect(response.body).to eq(ChatWithinShowSerializer.new(chat).to_json) }
   end

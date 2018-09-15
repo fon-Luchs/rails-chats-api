@@ -3,9 +3,11 @@ require 'rails_helper'
 RSpec.describe ChatsController, type: :controller do
   it { should be_a ApplicationController }
 
-  let(:user) { stub_model User }
+  let(:user) { create(:user, :with_auth_token, :with_expected_additional_columns) }
 
-  let(:chat) { stub_model Chat }
+  let(:users) { create_list :user, 3, :with_expected_additional_columns }
+
+  let(:chat) { stub_model Chat, users: users }
 
   before { sign_in user }
 
@@ -120,17 +122,25 @@ RSpec.describe ChatsController, type: :controller do
 
       before { post :leave, params: { id: chat.id }, format: :json }
 
+      it { expect(response).to have_http_status(410) }
+
       it { expect(response.body).to eq('Chat is inactive') }
     end
 
     context 'chat populus' do
+      before { post :leave, params: { id: chat.id }, format: :json }
+
       before do
-        expect(chat).to receive_message_chain(:users, :size, :<)
-          .with(no_args).with(no_args).with(2)
-          .and_return(false)
+        expect(chat).to receive(:users) do
+          double.tap do |chat_users|
+            expect(chat_users).to receive(:size) do
+              double.tap { |a| expect(a).to receive(:<).with(2).and_return(false) }
+            end
+          end
+        end
       end
 
-      before { post :leave, params: { id: chat.id }, format: :json }
+      it { expect(response).to have_http_status(:ok) }
 
       it { expect(response.body).to eq(ChatSerializer.new(chat).to_json) }
     end
