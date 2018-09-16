@@ -128,17 +128,14 @@ RSpec.describe ChatsController, type: :controller do
     end
 
     context 'chat populus' do
-      before { post :leave, params: { id: chat.id }, format: :json }
+      before { expect(chat).to receive(:users).and_return(chat.users).at_most(4).times }
 
       before do
-        expect(chat).to receive(:users) do
-          double.tap do |chat_users|
-            expect(chat_users).to receive(:size) do
-              double.tap { |a| expect(a).to receive(:<).with(2).and_return(false) }
-            end
-          end
-        end
+        expect(chat.users).to receive_message_chain(:size, :<)
+          .with(no_args).with(2).and_return(false)
       end
+
+      before { post :leave, params: { id: chat.id }, format: :json }
 
       it { expect(response).to have_http_status(:ok) }
 

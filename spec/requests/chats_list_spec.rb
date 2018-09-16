@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'ChatsList', type: :request do
-  let!(:chats) { create_list :chat, 3 }
-  let(:user) { create(:user, :with_auth_token) }
+  let(:chats) { create_list :chat, 3 }
+  let(:user) { create(:user, :with_auth_token, chats: chats) }
 
   let(:headers) { authorized_headers user.auth_token.value }
 
@@ -16,16 +16,16 @@ RSpec.describe 'ChatsList', type: :request do
     it do
       expect(parsed_response).to match([
         {
-          'id' => chats.first.id,
-          'user' => []
+          'id' => user.chats.first.id,
+          'users' => [{}]
         },
         {
-          'id' => chats.second.id,
-          'user' => []
+          'id' => user.chats.second.id,
+          'users' => [{}]
         },
         {
-          'id' => chats.third.id,
-          'user' => []
+          'id' => user.chats.third.id,
+          'users' => [{}]
         }
       ])
     end

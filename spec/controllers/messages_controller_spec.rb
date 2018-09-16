@@ -58,17 +58,15 @@ RSpec.describe MessagesController, type: :controller do
 
     before { expect(Chat).to receive(:find).with(chat.id.to_s).and_return(chat) }
 
-    before { get :index, params: { chat_id: chat.id }, format: :json }
+    before { expect(chat).to receive(:messages).and_return(chat.messages).at_most(4).times }
 
     before do
-      expect(chat).to receive(:messages) do
-        double.tap do |msg|
-          expect(msg).to receive_message_chain(:order, :paginate)
-            .with('created_at DESC').with(page: nil, per_page: 30)
-            .and_return(subject)
-        end
-      end
+      expect(chat.messages).to receive_message_chain(:order, :paginate)
+        .with('created_at DESC').with(page: nil, per_page: 30)
+        .and_return(subject)
     end
+
+    before { get :index, params: { chat_id: chat.id }, format: :json }
 
     it { expect(response.body).to eq(ChatWithinShowSerializer.new(chat).to_json) }
   end
